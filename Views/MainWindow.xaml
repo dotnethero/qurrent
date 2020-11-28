@@ -1,0 +1,101 @@
+﻿<Window x:Class="Qurrent.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Qurrent"
+        xmlns:models="clr-namespace:Qurrent.Models"
+        mc:Ignorable="d"
+        Title="Qurrent - minimalistic torrent client" Height="550" Width="900" d:DataContext="{d:DesignInstance Type=models:MainModel, IsDesignTimeCreatable=False }">
+    <Window.Resources>
+        <Style x:Key="LinkButton" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock
+                            Padding="5"
+                            FontSize="13"
+                            TextDecorations="Underline">
+                            <ContentPresenter />
+                        </TextBlock>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="Gray" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Black" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel 
+            Grid.Row="0"
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            Margin="15,5">
+            <Button
+                Padding="15,8"
+                Content="Add torrent" 
+                Click="AddTorrent" />
+        </StackPanel>
+        <ItemsControl
+            Grid.Row="1"
+            Margin="15,5"
+            ItemsSource="{Binding Path=Torrents, Mode=OneWay}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="80" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock FontSize="16" Text="{Binding Path=Name, Mode=OneTime}" />
+                            <TextBlock FontSize="12" Text="{Binding Path=State, Mode=OneWay}" Foreground="Gray" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
+                            <Button Content="pause" Command="{Binding PauseCommand}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource LinkButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsPaused}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Content="start" Command="{Binding StartCommand}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource LinkButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsPaused}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Style="{StaticResource LinkButton}" Content="remove" Command="{Binding RemoveCommand}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock 
+                                TextAlignment="Right" 
+                                FontSize="20" 
+                                Text="{Binding Path=Progress, Mode=OneWay, StringFormat={}{0:P}}" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</Window>
