@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using MonoTorrent.Client;
@@ -21,6 +23,8 @@ namespace Qurrent.Models
             State == TorrentState.Paused ||
             State == TorrentState.HashingPaused;
 
+        public IEnumerable<FileModel> Files { get; }
+
         public Command StartCommand { get; }
         public Command PauseCommand { get; }
         public Command RemoveCommand { get; }
@@ -34,6 +38,8 @@ namespace Qurrent.Models
                 OnPropertyChanged(nameof(State));
                 OnPropertyChanged(nameof(IsPaused));
             };
+
+            Files = manager.Torrent.Files.Select(f => new FileModel(f));
 
             // commands
             StartCommand = new Command(async () => await Start());
@@ -54,6 +60,10 @@ namespace Qurrent.Models
 
         public void RefreshProgress()
         {
+            foreach (var file in Files)
+            {
+                file.RefreshProgress();
+            }
             OnPropertyChanged(nameof(Progress));
         }
 

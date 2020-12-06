@@ -6,16 +6,13 @@
         xmlns:local="clr-namespace:Qurrent"
         xmlns:models="clr-namespace:Qurrent.Models"
         mc:Ignorable="d"
-        Title="Qurrent - minimalistic torrent client" Height="550" Width="900" d:DataContext="{d:DesignInstance Type=models:MainModel, IsDesignTimeCreatable=False }">
+        Title="Qurrent - minimalistic torrent client" Height="650" Width="900" d:DataContext="{d:DesignInstance Type=models:MainModel, IsDesignTimeCreatable=False }">
     <Window.Resources>
         <Style x:Key="LinkButton" TargetType="Button">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <TextBlock
-                            Padding="5"
-                            FontSize="13"
-                            TextDecorations="Underline">
+                        <TextBlock TextDecorations="Underline">
                             <ContentPresenter />
                         </TextBlock>
                     </ControlTemplate>
@@ -33,7 +30,9 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="5*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="9*" />
         </Grid.RowDefinitions>
         <StackPanel 
             Grid.Row="0"
@@ -45,11 +44,18 @@
                 Content="Add torrent" 
                 Click="AddTorrent" />
         </StackPanel>
-        <ItemsControl
+        <ListView
             Grid.Row="1"
             Margin="15,5"
-            ItemsSource="{Binding Path=Torrents, Mode=OneWay}">
-            <ItemsControl.ItemTemplate>
+            BorderThickness="0"
+            ItemsSource="{Binding Path=Torrents, Mode=OneWay}"
+            SelectedItem="{Binding Path=SelectedTorrent, Mode=TwoWay}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="0,5">
                         <Grid.ColumnDefinitions>
@@ -63,7 +69,7 @@
                             <TextBlock FontSize="12" Text="{Binding Path=State, Mode=OneWay}" Foreground="Gray" />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
-                            <Button Content="pause" Command="{Binding PauseCommand}">
+                            <Button FontSize="13" Margin="5" Content="pause" Command="{Binding PauseCommand}">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource LinkButton}">
                                         <Style.Triggers>
@@ -74,7 +80,7 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Button Content="start" Command="{Binding StartCommand}">
+                            <Button FontSize="13" Margin="5" Content="start" Command="{Binding StartCommand}">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource LinkButton}">
                                         <Style.Triggers>
@@ -85,7 +91,7 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Button Style="{StaticResource LinkButton}" Content="remove" Command="{Binding RemoveCommand}" />
+                            <Button Style="{StaticResource LinkButton}" FontSize="13" Margin="5" Content="remove" Command="{Binding RemoveCommand}" />
                         </StackPanel>
                         <StackPanel Grid.Column="2">
                             <TextBlock 
@@ -95,7 +101,42 @@
                         </StackPanel>
                     </Grid>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+            </ListView.ItemTemplate>
+        </ListView>
+        <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" Background="AliceBlue" />
+        <ListView 
+            Grid.Row="3"
+            Margin="15,10"
+            BorderThickness="0"
+            ItemsSource="{Binding Path=SelectedTorrent.Files, Mode=OneWay}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,3" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="80" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontSize="14" Text="{Binding Path=Name, Mode=OneTime}" />
+                        <Button
+                            Grid.Column="1"
+                            Style="{StaticResource LinkButton}"
+                            FontSize="12"
+                            Margin="3"
+                            Content="{Binding Path=State, Mode=OneWay}" />
+                        <TextBlock
+                            Grid.Column="2" 
+                            TextAlignment="Right" 
+                            FontSize="17" 
+                            Text="{Binding Path=Progress, Mode=OneWay, StringFormat={}{0:P}}" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </Window>

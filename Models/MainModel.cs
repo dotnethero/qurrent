@@ -1,21 +1,36 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoTorrent;
 using MonoTorrent.Client;
+using Qurrent.Annotations;
 
 namespace Qurrent.Models
 {
-    class MainModel
+    class MainModel: INotifyPropertyChanged
     {
         const string metadataFolder = "./Data";
         const string downloadsFolder = "./Downloads";
 
         ClientEngine engine;
         Timer timer;
+        TorrentModel selectedTorrent;
 
         public ObservableCollection<TorrentModel> Torrents { get; } = new ObservableCollection<TorrentModel>();
+
+        public TorrentModel SelectedTorrent
+        {
+            get => selectedTorrent;
+            set
+            {
+                if (Equals(value, selectedTorrent)) return;
+                selectedTorrent = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MainModel()
         {
@@ -57,6 +72,14 @@ namespace Qurrent.Models
         {
             foreach (var manager in Torrents)
                 manager.RefreshProgress();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
